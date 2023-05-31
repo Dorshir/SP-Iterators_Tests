@@ -3,10 +3,12 @@
 
 void MagicalContainer::addElement(int element) {
     elements.push_back(element);
+    std::sort(elements.begin(), elements.end());
 }
 
 void MagicalContainer::removeElement(int element) {
     elements.erase(std::remove(elements.begin(), elements.end(), element), elements.end());
+    std::sort(elements.begin(), elements.end());
 }
 
 int MagicalContainer::size() const {
@@ -57,42 +59,51 @@ bool MagicalContainer::AscendingIterator::operator<(const AscendingIterator& oth
 // SideCrossIterator
 
 MagicalContainer::SideCrossIterator::SideCrossIterator(const MagicalContainer& cont, int forwardIndex,
-                                                       int backwardIndex, bool forwardDir)
+                                                       int backwardIndex, bool forwardDir, int counter)
         : container(cont), forwardIndex(forwardIndex), backwardIndex(backwardIndex),
-          forwardDirection(forwardDir) {}
+          forwardDirection(forwardDir) ,counter(counter){}
 
 MagicalContainer::SideCrossIterator MagicalContainer::SideCrossIterator::begin() const {
     return SideCrossIterator(container, 0, container.size() - 1, true);
 }
 
 MagicalContainer::SideCrossIterator MagicalContainer::SideCrossIterator::end() const {
-    return SideCrossIterator(container, container.size(), container.size() - 1, true);
+    return SideCrossIterator(container, container.size(), 0, false);
 }
 
 MagicalContainer::SideCrossIterator& MagicalContainer::SideCrossIterator::operator++() {
+
     if (forwardDirection) {
         ++forwardIndex;
-    }
-    else {
+    } else {
         --backwardIndex;
     }
+    forwardDirection = !forwardDirection;
+    ++counter;
+
+    // Check if the counter reaches a specific value
+    if (counter >= container.size()) {
+        forwardIndex = container.size();
+        backwardIndex = 0;
+    }
+
     return *this;
 }
 
 int MagicalContainer::SideCrossIterator::operator*() const {
-    if (forwardIndex >= container.size()) {
+
+    if(forwardIndex >= container.size() || backwardIndex < 0) {
         throw std::out_of_range("Iterator out of range.");
     }
-    if (forwardIndex < backwardIndex) {
+
+    if (forwardDirection) {
         return container.elements[static_cast<std::vector<int>::size_type>(forwardIndex)];
-    }
-    else if (forwardIndex > backwardIndex) {
-        return container.elements[static_cast<std::vector<int>::size_type>(backwardIndex)];
     }
     else {
-        return container.elements[static_cast<std::vector<int>::size_type>(forwardIndex)];
+        return container.elements[static_cast<std::vector<int>::size_type>(backwardIndex)];
     }
 }
+
 
 bool MagicalContainer::SideCrossIterator::operator==(const SideCrossIterator& other) const {
     return forwardIndex == other.forwardIndex && backwardIndex == other.backwardIndex &&
@@ -168,28 +179,3 @@ bool MagicalContainer::PrimeIterator::operator<(const PrimeIterator& other) cons
     return currentIndex < other.currentIndex;
 }
 
-// Begin and End functions for iterators
-
-MagicalContainer::AscendingIterator MagicalContainer::beginAscending() const {
-    return AscendingIterator(*this, 0);
-}
-
-MagicalContainer::AscendingIterator MagicalContainer::endAscending() const {
-    return AscendingIterator(*this, size());
-}
-
-MagicalContainer::SideCrossIterator MagicalContainer::beginCross() const {
-    return SideCrossIterator(*this, 0, size() - 1, true);
-}
-
-MagicalContainer::SideCrossIterator MagicalContainer::endCross() const {
-    return SideCrossIterator(*this, size(), size() - 1, true);
-}
-
-MagicalContainer::PrimeIterator MagicalContainer::beginPrime() const {
-    return PrimeIterator(*this, 0);
-}
-
-MagicalContainer::PrimeIterator MagicalContainer::endPrime() const {
-    return PrimeIterator(*this, size());
-}

@@ -23,17 +23,6 @@ public:
 
     class PrimeIterator;
 
-    [[nodiscard]] AscendingIterator beginAscending() const;
-
-    [[nodiscard]] AscendingIterator endAscending() const;
-
-    [[nodiscard]] SideCrossIterator beginCross() const;
-
-    [[nodiscard]] SideCrossIterator endCross() const;
-
-    [[nodiscard]] PrimeIterator beginPrime() const;
-
-    [[nodiscard]] PrimeIterator endPrime() const;
 };
 
 class MagicalContainer::AscendingIterator {
@@ -67,10 +56,11 @@ private:
     int forwardIndex;
     int backwardIndex;
     bool forwardDirection;
+    int counter;
 
 public:
     explicit SideCrossIterator(const MagicalContainer &cont, int forwardIndex = 0, int backwardIndex = 0,
-                               bool forwardDir = true);
+                               bool forwardDir = true, int counter = 0);
 
     [[nodiscard]] SideCrossIterator begin() const;
 

@@ -11,8 +11,9 @@ TEST_CASE("AscendingIterator Traversal") {
     container.addElement(3);
     container.addElement(9);
 
+    MagicalContainer::AscendingIterator ascIter(container);
     std::vector<int> elements;
-    for (const auto &element: container.beginAscending()) {
+    for (const auto &element: ascIter.begin()) {
         elements.push_back(element);
     }
 
@@ -29,8 +30,9 @@ TEST_CASE("SideCrossIterator Traversal") {
     container.addElement(3);
     container.addElement(9);
 
+    MagicalContainer::SideCrossIterator crossIter(container);
     std::vector<int> elements;
-    for (const auto &element: container.beginCross()) {
+    for (const auto &element: crossIter.begin()) {
         elements.push_back(element);
     }
 
@@ -47,8 +49,9 @@ TEST_CASE("PrimeIterator Traversal") {
     container.addElement(3);
     container.addElement(9);
 
+    MagicalContainer::SideCrossIterator primeIter(container);
     std::vector<int> elements;
-    for (const auto &element: container.beginPrime()) {
+    for (const auto &element: primeIter.begin()) {
         elements.push_back(element);
     }
 
@@ -60,22 +63,25 @@ TEST_CASE("Empty Container Iterators") {
     MagicalContainer container;
 
     // AscendingIterator
+    MagicalContainer::SideCrossIterator AscIter(container);
     std::vector<int> ascElements;
-    for (const auto &element: container.beginAscending()) {
+    for (const auto &element: AscIter.begin()) {
         ascElements.push_back(element);
     }
     CHECK(ascElements.empty());
 
     // SideCrossIterator
+    MagicalContainer::SideCrossIterator crossIter(container);
     std::vector<int> sideCrossElements;
-    for (const auto &element: container.beginCross()) {
+    for (const auto &element: crossIter.begin()) {
         sideCrossElements.push_back(element);
     }
     CHECK(sideCrossElements.empty());
 
     // PrimeIterator
+    MagicalContainer::SideCrossIterator primeIter(container);
     std::vector<int> primeElements;
-    for (const auto &element: container.beginPrime()) {
+    for (const auto &element: primeIter.begin()) {
         primeElements.push_back(element);
     }
     CHECK(primeElements.empty());
@@ -112,10 +118,11 @@ TEST_CASE("Container Modification during AscendingIterator Traversal") {
     container.addElement(3);
     container.addElement(9);
 
+    MagicalContainer::AscendingIterator ascIter(container);
     std::vector<int> elements;
-    for (auto it = container.beginAscending(); it != container.endAscending(); ++it) {
-        elements.push_back(*it);
-        if (*it == 10) {
+    for (int it : ascIter) {
+        elements.push_back(it);
+        if (it == 10) {
             container.addElement(4);
             container.removeElement(2);
         }
@@ -134,10 +141,11 @@ TEST_CASE("Container Modification during SideCrossIterator Traversal") {
     container.addElement(3);
     container.addElement(9);
 
+    MagicalContainer::AscendingIterator crossIter(container);
     std::vector<int> elements;
-    for (auto it = container.beginCross(); it != container.endCross(); ++it) {
-        elements.push_back(*it);
-        if (*it == 10) {
+    for (int it : crossIter) {
+        elements.push_back(it);
+        if (it == 10) {
             container.addElement(4);
             container.removeElement(5);
         }
@@ -156,8 +164,9 @@ TEST_CASE("Container Modification during PrimeIterator Traversal") {
     container.addElement(3);
     container.addElement(9);
 
+    MagicalContainer::SideCrossIterator primeIter(container);
     std::vector<int> elements;
-    for (auto it = container.beginPrime(); it != container.endPrime(); ++it) {
+    for (auto it = primeIter.begin(); it != primeIter.end(); ++it) {
         elements.push_back(*it);
         if (*it == 2) {
             container.addElement(7);
