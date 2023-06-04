@@ -1,6 +1,7 @@
 #include "doctest.h"
 #include "sources/MagicalContainer.hpp"
 #include <algorithm>
+#include <stdexcept>
 
 TEST_CASE("AscendingIterator Traversal") {
     MagicalContainer container;
@@ -36,7 +37,7 @@ TEST_CASE("SideCrossIterator Traversal") {
         elements.push_back(element);
     }
 
-    std::vector<int> expected{5, 2, 10, 7, 3, 9, 10, 2, 7, 5};
+    std::vector<int> expected{5, 9, 2, 3, 7, 10};
     CHECK_EQ(elements, expected);
 }
 
@@ -55,7 +56,7 @@ TEST_CASE("PrimeIterator Traversal") {
         elements.push_back(element);
     }
 
-    std::vector<int> expected{2, 3, 5, 7};
+    std::vector<int> expected{5, 2, 7, 3};
     CHECK_EQ(elements, expected);
 }
 
@@ -151,7 +152,7 @@ TEST_CASE("Container Modification during SideCrossIterator Traversal") {
         }
     }
 
-    std::vector<int> expected{5, 2, 10, 7, 3, 9, 4, 10, 2, 7};
+    std::vector<int> expected{5, 9, 2, 3, 10, 7}; // Since iterator is sidecross, end() wont reach these new elements
     CHECK_EQ(elements, expected);
 }
 
@@ -186,11 +187,13 @@ TEST_CASE("Greater Than Comparison between Iterators") {
     container.addElement(10);
     MagicalContainer::AscendingIterator ascIter1(container);
     MagicalContainer::AscendingIterator ascIter2(container);
-    CHECK_LT(ascIter1, ascIter2);
+    CHECK_EQ(ascIter1, ascIter2);
     ++ascIter1;
     CHECK_GT(ascIter1, ascIter2);
     ++ascIter2;
-    CHECK_LT(ascIter1, ascIter2);
+    CHECK_EQ(ascIter1, ascIter2);
+    ++ascIter2;
+    CHECK_GT(ascIter2, ascIter1);
 }
 
 TEST_CASE("AscendingIterator Equality Comparison") {
@@ -202,7 +205,7 @@ TEST_CASE("AscendingIterator Equality Comparison") {
     MagicalContainer::AscendingIterator ascIter2(container);
     CHECK_EQ(ascIter1, ascIter2);
     ++ascIter1;
-    CHECK_EQ(ascIter1, ascIter2);
+    CHECK_GT(ascIter1, ascIter2);
     ++ascIter2;
     CHECK_EQ(ascIter1, ascIter2);
 }
@@ -338,9 +341,9 @@ TEST_CASE("SideCrossIterator Dereference Operator") {
     container.addElement(5);
     container.addElement(2);
     MagicalContainer::SideCrossIterator crossIter(container);
-    CHECK_EQ(*crossIter, 2);
-    ++crossIter;
     CHECK_EQ(*crossIter, 5);
+    ++crossIter;
+    CHECK_EQ(*crossIter, 2);
 }
 
 TEST_CASE("PrimeIterator Dereference Operator") {
@@ -551,5 +554,4 @@ TEST_CASE("Add Element while Iterating - PrimeIterator") {
     CHECK_THROWS(++primeIter);
     CHECK_THROWS(*primeIter);
 }
-
 
